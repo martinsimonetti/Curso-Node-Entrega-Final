@@ -20,13 +20,24 @@ router.get("/products", async (req, res) => {
     } else {
         res.status(404).json(result.payload)
     }*/
-    const result = await productManager.getProducts()
+    
+    let { sort, query } = req.query
+    console.log(query)
+    let limit = parseInt(req.query.limit)
+    let page = parseInt(req.query.page)
+    
+    if (!limit) limit = 10
+    if (!page) page = 1
+    if (!query) query = null
+    if (sort !== 'asc' && sort != 'desc') sort = null
+    
+    const result = await productManager.getProductsParams( limit, page, sort, query )
 
     if(result.status === "success"){
         res.status(200)
-        res.render("home", { data: result.payload} )
+        res.render("home", result )
     } else {
-        res.status(404).json(result.payload)
+        res.status(404).json(result)
     }
 })
 
@@ -95,14 +106,14 @@ router.get("/realtimeproducts", async (req, res) => {
         }
     } else {
         res.status(404).json(respuesta.payload)
-    }*/
-    const respuesta = await productManager.getProducts()
+    }*/    
+    const result = await productManager.getProducts()
     
-    if(respuesta.status === "success"){
+    if(result.status === "success"){
         res.status(200)
-        res.render("realTimeProducts", { data: respuesta.payload} )
+        res.render("realTimeProducts", { data: result.payload} )
     } else {
-        res.status(404).json(respuesta.payload)
+        res.status(404).json(result.payload)
     }
 })
 

@@ -130,6 +130,78 @@ class ProductManager {
         }        
     }
 
+    async getProductsParams( limit, page, sort, query ) {        
+        try {
+            console.log(query)
+            let options
+            let result
+            
+            if (sort) {
+                sort === 'asc' ? sort = 1 : sort = -1
+                options = { page, limit, sort: { price: sort }, lean: true, customLabels: { docs: 'payload' } }
+            } else {
+                options = { page, limit, lean: true, customLabels: { docs: 'payload' } }
+            }
+
+            if (query){
+                result = await productModel.paginate(
+                    { category: query },
+                    options
+                )
+            } else {
+                result = await productModel.paginate(
+                    { },
+                    options
+                )
+            }
+            console.log(query)
+
+            if (result.hasPrevPage) {
+                result.prevLink = `http://localhost:8080/products/?limit=${result.limit}&&page=${result.prevPage}`
+                if (sort){
+                    if(sort == 1){
+                        result.prevLink += `&&sort=asc`
+                    } else {
+                        result.prevLink += `&&sort=desc`
+                    }                    
+                }
+                if (query) result.prevLink += `&&query=${query}`
+            } else {
+                result.prevLink = ""
+            }
+
+            if (result.hasNextPage) {
+                result.nextLink = `http://localhost:8080/products/?limit=${result.limit}&&page=${result.nextPage}`
+                if (sort){
+                    if(sort == 1){
+                        result.nextLink += `&&sort=asc`
+                    } else {
+                        result.nextLink += `&&sort=desc`
+                    }                    
+                }
+                if (query) result.nextLink += `&&query=${query}`
+            } else {
+                result.nextLink = ""
+            }
+
+            console.log(result.prevLink)
+            console.log(result.nextLink)
+            
+
+            result.isValid = !(page <= 0 || page > result.totalPages)
+            result.status = "success"
+            
+            return result
+        
+        } catch (error) {
+            console.log(error)
+            return {
+                status: "error",
+                payload: []
+            }
+        }        
+    }
+
     async getProductById(productId){        
         /*const productos = await this.getProducts()
         this.products = productos.payload
