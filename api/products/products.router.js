@@ -22,7 +22,6 @@ router.get("/products", async (req, res) => {
     }*/
     
     let { sort, query } = req.query
-    console.log(query)
     let limit = parseInt(req.query.limit)
     let page = parseInt(req.query.page)
     

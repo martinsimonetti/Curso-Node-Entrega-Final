@@ -131,8 +131,7 @@ class ProductManager {
     }
 
     async getProductsParams( limit, page, sort, query ) {        
-        try {
-            console.log(query)
+        try {            
             let options
             let result
             
@@ -154,8 +153,7 @@ class ProductManager {
                     options
                 )
             }
-            console.log(query)
-
+            
             if (result.hasPrevPage) {
                 result.prevLink = `http://localhost:8080/products/?limit=${result.limit}&&page=${result.prevPage}`
                 if (sort){
@@ -182,11 +180,7 @@ class ProductManager {
                 if (query) result.nextLink += `&&query=${query}`
             } else {
                 result.nextLink = ""
-            }
-
-            console.log(result.prevLink)
-            console.log(result.nextLink)
-            
+            }            
 
             result.isValid = !(page <= 0 || page > result.totalPages)
             result.status = "success"
@@ -194,7 +188,6 @@ class ProductManager {
             return result
         
         } catch (error) {
-            console.log(error)
             return {
                 status: "error",
                 payload: []

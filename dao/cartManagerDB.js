@@ -205,6 +205,97 @@ class CartManager {
             }            
         }
     }
+
+    async deleteProductCart(cartId, productId){
+        try {
+            const carrito = await cartModel.findById({ _id: cartId})
+            const objectIdProduct = new mongoose.Types.ObjectId(productId)
+            carrito.products = await carrito.products.filter((p) => !p.product.equals(objectIdProduct))            
+            
+            let result = await cartModel.updateOne({ _id: cartId}, carrito)
+            
+            return {
+                status: "success",
+                payload: result
+            }            
+        } catch (error) {
+            return {
+                status: "failed",
+                error: "No se pudo encontrar el carrito o producto buscado. Verifique los datos ingresados."
+            }
+        }        
+    }
+
+    async deleteProductsCart(cartId){
+        try {
+            const carrito = await cartModel.findById({ _id: cartId})
+            carrito.products = []
+            
+            let result = await cartModel.updateOne({ _id: cartId}, carrito)
+            
+            return {
+                status: "success",
+                payload: result
+            }            
+        } catch (error) {
+            return {
+                status: "failed",
+                error: "No se pudo encontrar el carrito o producto buscado. Verifique los datos ingresados."
+            }
+        }        
+    }
+
+    async addManyProductsCart(cartId, products){
+        try {
+            const carrito = await cartModel.findById({ _id: cartId})
+            carrito.products = products
+            
+            let result = await cartModel.updateMany({ _id: cartId}, carrito)
+            
+            return {
+                status: "success",
+                payload: result
+            }            
+        } catch (error) {
+            return {
+                status: "failed",
+                error: "No se pudo encontrar el carrito. Verifique los datos ingresados."
+            }
+        }
+    }
+
+    async updateQuantity(cartId, productId, quantity){
+        if(!quantity || quantity.quantity === 0){
+            return {
+                status: "failed",
+                error: "La cantidad no puede ser nula o cero. Verifique la cantidad."
+            }
+        }
+
+        try {
+            const carrito = await cartModel.findById({ _id: cartId})
+            const objectIdProduct = new mongoose.Types.ObjectId(productId)            
+            const producto = await carrito.products.find((p) => p.product.equals(objectIdProduct))
+            if(!producto){
+                return {
+                    status: "failed",
+                    error: "No se pudo encontrar el producto. Verifique los datos ingresados."
+                }
+            }
+            producto.quantity = quantity
+            let result = await cartModel.updateOne({ _id: cartId}, carrito)
+            return {
+                status: "success",
+                payload: result
+            }
+
+        } catch (error) {
+            return {
+                status: "failed",
+                error: "No se pudo encontrar el carrito. Verifique los datos ingresados."
+            }
+        }
+    }
 }
 
 module.exports = CartManager

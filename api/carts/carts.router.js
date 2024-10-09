@@ -51,4 +51,52 @@ router.post("/carts/:cid/product/:pid", async (req, res) => {
     }
 })
 
+router.delete("/carts/:cid/products/:pid", async (req, res) => {
+    const carritoId = req.params.cid
+    const productoId = req.params.pid
+
+    const result = await cartManager.deleteProductCart(carritoId, productoId)
+    if(result.status === "success"){
+        res.status(201).json(result.payload)
+    } else {
+        res.status(404).json(result.error)
+    }
+})
+
+router.put("/carts/:cid", async (req,res) => {
+    const carritoId = req.params.cid
+    const productos = req.body
+
+    const result = await cartManager.addManyProductsCart(carritoId, productos)
+    if(result.status === "success"){
+        res.status(201).json(result.payload)
+    } else {
+        res.status(404).json(result.error)
+    }
+})
+
+router.put("/carts/:cid/products/:pid", async (req, res) => {
+    const carritoId = req.params.cid
+    const productoId = req.params.pid
+    const cantidad = req.body.quantity
+
+    const result = await cartManager.updateQuantity(carritoId, productoId, cantidad)
+    if(result.status === "success"){
+        res.status(201).json(result.payload)
+    } else {
+        res.status(404).json(result.error)
+    }
+})
+
+router.delete("/carts/:cid", async (req,res) => {
+    const carritoId = req.params.cid
+
+    const result = await cartManager.deleteProductsCart(carritoId)
+    if(result.status === "success"){
+        res.status(201).json(result.payload)
+    } else {
+        res.status(404).json(result.error)
+    }
+})
+
 module.exports = router
