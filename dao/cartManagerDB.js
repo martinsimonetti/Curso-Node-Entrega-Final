@@ -100,7 +100,7 @@ class CartManager {
         }*/
 
         try {
-            const carrito = await cartModel.findById({ _id: cartId})
+            const carrito = await cartModel.findById({ _id: cartId }).populate('products.product')
             
             if(!carrito){
                 return {
