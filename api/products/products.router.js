@@ -21,7 +21,7 @@ router.get("/products", async (req, res) => {
         res.status(404).json(result.payload)
     }*/
     
-    let { sort, query } = req.query
+    let { sort, query, status } = req.query
     let limit = parseInt(req.query.limit)
     let page = parseInt(req.query.page)
     
@@ -30,11 +30,14 @@ router.get("/products", async (req, res) => {
     if (!query) query = null
     if (sort !== 'asc' && sort != 'desc') sort = null
     
-    const result = await productManager.getProductsParams( limit, page, sort, query )
-    console.log(result)
+    const result = await productManager.getProductsParams( limit, page, sort, query, status )
+
     if(result.status === "success"){
-        res.status(200)
-        res.render("home", result )
+        res.status(200).render("home", {
+            ...result,
+            query,
+            status
+        })
     } else {
         res.status(404).json(result)
     }

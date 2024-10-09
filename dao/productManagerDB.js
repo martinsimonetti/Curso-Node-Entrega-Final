@@ -130,69 +130,58 @@ class ProductManager {
         }        
     }
 
-    async getProductsParams( limit, page, sort, query ) {        
-        try {            
-            let options
-            let result
-            
+    async getProductsParams(limit, page, sort, query, status) {
+        try {
+            let filter = {};
+    
+            // Filtrado por categoría
+            if (query) {
+                filter.category = query;
+            }
+    
+            // Filtrado por estado
+            if (status && status !== 'any') {
+                filter.status = status === 'true'; // Convirtiendo "true" o "false" en booleano
+            }
+    
+            let options = {
+                page,
+                limit,
+                lean: true,
+                customLabels: { docs: 'payload' }
+            };
+    
             if (sort) {
-                sort === 'asc' ? sort = 1 : sort = -1
-                options = { page, limit, sort: { price: sort }, lean: true, customLabels: { docs: 'payload' } }
-            } else {
-                options = { page, limit, lean: true, customLabels: { docs: 'payload' } }
+                options.sort = { price: sort === 'asc' ? 1 : -1 };
             }
-
-            if (query){
-                result = await productModel.paginate(
-                    { category: query },
-                    options
-                )
-            } else {
-                result = await productModel.paginate(
-                    { },
-                    options
-                )
-            }
-            
+    
+            const result = await productModel.paginate(filter, options);
+    
+            // Generar enlaces de paginación
             if (result.hasPrevPage) {
-                result.prevLink = `http://localhost:8080/products/?limit=${result.limit}&&page=${result.prevPage}`
-                if (sort){
-                    if(sort == 1){
-                        result.prevLink += `&&sort=asc`
-                    } else {
-                        result.prevLink += `&&sort=desc`
-                    }                    
-                }
-                if (query) result.prevLink += `&&query=${query}`
-            } else {
-                result.prevLink = ""
+                result.prevLink = `http://localhost:8080/products/?limit=${limit}&page=${result.prevPage}`;
+                if (sort) result.prevLink += `&sort=${sort}`;
+                if (query) result.prevLink += `&query=${query}`;
+                if (status) result.prevLink += `&status=${status}`;
             }
-
+    
             if (result.hasNextPage) {
-                result.nextLink = `http://localhost:8080/products/?limit=${result.limit}&&page=${result.nextPage}`
-                if (sort){
-                    if(sort == 1){
-                        result.nextLink += `&&sort=asc`
-                    } else {
-                        result.nextLink += `&&sort=desc`
-                    }                    
-                }
-                if (query) result.nextLink += `&&query=${query}`
-            } else {
-                result.nextLink = ""
-            }            
-
-            result.isValid = !(page <= 0 || page > result.totalPages)
-            result.status = "success"
-            
-            return result
-        
+                result.nextLink = `http://localhost:8080/products/?limit=${limit}&page=${result.nextPage}`;
+                if (sort) result.nextLink += `&sort=${sort}`;
+                if (query) result.nextLink += `&query=${query}`;
+                if (status) result.nextLink += `&status=${status}`;
+            }
+    
+            result.isValid = !(page <= 0 || page > result.totalPages);
+            result.status = "success";
+    
+            return result;
         } catch (error) {
             return {
                 status: "error",
                 payload: []
-            }
-        }        
+            };
+        }
     }
 
     async getProductById(productId){        
