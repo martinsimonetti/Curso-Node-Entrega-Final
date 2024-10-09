@@ -31,7 +31,7 @@ router.get("/products", async (req, res) => {
     if (sort !== 'asc' && sort != 'desc') sort = null
     
     const result = await productManager.getProductsParams( limit, page, sort, query )
-
+    console.log(result)
     if(result.status === "success"){
         res.status(200)
         res.render("home", result )

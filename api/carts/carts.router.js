@@ -30,7 +30,16 @@ router.get("/carts/:cid", async (req, res) => {
     const result = await cartManager.getCartById(carritoId)
     
     if(result.status === "success"){
-        res.status(200).json(result.payload)
+        const plainProducts = result.payload.products.map(item => ({
+            title: item.product.title,
+            description: item.product.description,
+            code: item.product.code,
+            price: item.product.price,
+            stock: item.product.stock,
+            category: item.product.category,
+            quantity: item.quantity
+        }))
+        res.status(200).render("cart", { payload: plainProducts })
     } else {
         res.status(200).json(result.error)
     }
@@ -44,8 +53,9 @@ router.post("/carts/:cid/product/:pid", async (req, res) => {
     const productoId = req.params.pid
     
     const result = await cartManager.addProductInCart(carritoId, productoId)
-    if(result.status === "success"){
-        res.status(201).json(result.payload)
+    
+    if(result.status === "success"){        
+        res.status(201).json(result.payload)        
     } else {
         res.status(404).json(result.error)
     }

@@ -1,0 +1,16 @@
+<h1>Lista de Productos</h1>
+<div>
+    {{#each payload}}
+    <div>
+        <h2>{{this.title}}</h2>
+        <p><strong>Descripción:</strong> {{this.description}}</p>
+        <p><strong>Código:</strong> {{this.code}}</p>
+        <p><strong>Precio:</strong> ${{this.price}}</p>
+        <p><strong>Stock:</strong> {{this.stock}}</p>
+        <p><strong>Categoría:</strong> {{this.category}}</p>
+        <p><strong>Cantidad:</strong> {{this.quantity}}</p>
+    <hr>
+    </div>  
+    {{/each}}
+</div>
+<br />

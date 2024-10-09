@@ -107,7 +107,7 @@ class CartManager {
                     status: "failed",
                     error: "No se pudo encontrar el carrito buscado. Verifique el número de id."
                 }
-            }
+            }            
             return {
                 status: "success",
                 payload: carrito
@@ -181,7 +181,7 @@ class CartManager {
             }            
             try {                
                 let result = await cartModel.updateOne({ _id: cartId}, carrito)
-                
+                console.log("Producto agregado correctamente.")
                 return {
                     status: "success",
                     payload: result
